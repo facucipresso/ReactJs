@@ -1,0 +1,15 @@
+nav {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    background-color: rgb(171, 179, 178);
+    padding: 15px;
+    
+}
+
+button {
+    margin: 10px;
+    height: 10vh;
+    width: 10vw;
+}
+
