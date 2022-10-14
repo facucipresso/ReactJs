@@ -1,35 +1,65 @@
-import {useState, useEffect} from 'react'
-import { getProducts } from '../asyncMock'
-import ItemList from '../itemList/itemList'
+import { useState, useEffect } from 'react'
+import { getProducts, getProductsByCategory } from "../../asyncMock"
+import ItemList from '../ItemList/ItemList'
+import { useParams } from 'react-router-dom'
 
-const ItemListConteiner = ({greeting}) => {
+const ItemListContainer = ({ greeting  }) => {
     const [products, setProducts] = useState([])
-    const [loadign, setLoading] = useState(true)
+    const [loading, setLoading] = useState(true)
 
-    useEffect(()=>{
-        getProducts().then(response => {
-            console.log(response);
+    const { categoryId } = useParams()
+
+    useEffect(() => {
+        setLoading(true)
+
+        const asyncFunction = categoryId ? getProductsByCategory : getProducts
+       
+        asyncFunction(categoryId).then(response => {
             setProducts(response)
-        }). finally(()=>{
+        }).catch(error => {
+            console.log(error)
+        }).finally(() => {
             setLoading(false)
-        })
-    },[])
+        })  
+    }, [categoryId])
 
-    console.log(products);
-    const productsMapped = products.map(prod => <li key={prod.id} style={{color:'blue', listStyle: 'none'}}>{prod.name}</li> )
-    console.log(productsMapped);
-    
-    if (loadign){
-        return <h1>Loading...</h1>
+    useEffect(() => {
+        const onResize = (e) => console.log(e)
+
+        window.addEventListener('resize', onResize)
+
+        return () => { 
+            window.removeEventListener('resize', onResize)
+            console.log('removi event listener')
+            }
+        }, [])
+
+
+    if(loading) {
+        return <h1>Cargando productos...</h1>
     }
-    
+
+    // if(products.length === 0) {
+    //     return categoryId ? <h1>No hay productos en nuestra categoria {categoryId}</h1> : <h1>No hay productos disponibles</h1>
+    // }
+
+    // const handleKeyDown = (e) => {
+    //     console.log(e)
+    //     if(e.code === 'KeyA') {
+    //         e.preventDefault()
+    //     }
+    // }
+
     return (
-        <div>
-            <h1>{greeting}</h1>
-            {/* {productsMapped } */}
-            <ItemList products={products}/>
+        <div 
+            // onClick={(event) => console.log(event)}
+            onClick={() => console.log('itemlistContainer')}
+        >
+            {/* <button onClick={(e) => console.log(e)}>boton</button> */}
+            {/* <input onKeyDown={handleKeyDown}/> */}
+            <ItemList products={products} />
         </div>
     )
 }
 
-export default ItemListConteiner
+export default ItemListContainer
